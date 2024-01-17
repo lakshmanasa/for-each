@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6bc87790-458f-468c-b4c4-a62c958c8df5" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="for-eachFlow" doc:id="743ed1a0-ce0a-4c15-b8e0-515287d9bc4b" >
+		<http:listener doc:name="Listener" doc:id="c1894a53-c67a-418a-9d4a-7a91a47bdfd0" config-ref="HTTP_Listener_config" path="/actualop"/>
+		<set-payload value="#[[1,2,3,4,5,6]]" doc:name="Set Payload" doc:id="5194ebd8-83fb-48b3-a4ac-d08ea2474a03" />
+		<foreach doc:name="For Each" doc:id="7efed590-8b26-4083-a7ce-bb588e780598" >
+			<set-payload value="#[payload * 10]" doc:name="Set Payload" doc:id="25abd8ca-9408-491d-9abf-a5ee2135fd61" />
+			<logger level="INFO" doc:name="Logger" doc:id="15270a02-74c4-486e-b8e7-c42f08d55092" message="#[payload]"/>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="cf9fcc72-12bf-423d-b5db-bd49acbf8729" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="for-eachFlow1" doc:id="d4c090ad-4f7d-432c-bb98-0ec2f1934cbb" >
+		<http:listener doc:name="Listener" doc:id="5a3ebe9d-a9fe-4661-bb1e-aef27e8a6392" config-ref="HTTP_Listener_config" path="/storingop"/>
+		<set-payload value="#[[1,2,3,4,5,6]]" doc:name="Set Payload" doc:id="204e6881-36a2-465e-9ea5-ce4d013d3756" />
+		<foreach doc:name="For Each" doc:id="e6509105-a5ca-4eb7-b91c-a192599fc51f" >
+			<set-payload value="#[payload * 10]" doc:name="Set Payload" doc:id="634c5071-6f53-4782-b239-ba51b334e6c9" />
+			<logger level="INFO" doc:name="Logger" doc:id="0ace4c7c-2c4c-449d-b177-eb00664b5c47" message="#[payload]"/>
+			<set-variable value="#[(vars.op default []) + payload]" doc:name="Set Variable" doc:id="81579539-84ba-4137-b20a-e911f0e87530" variableName="op"/>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="dba740f7-45a3-439c-aba8-a2d2d0ec5bd5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.op]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="for-eachFlow2" doc:id="fa2608ac-b1d2-463d-9903-745e4f172824" >
+		<http:listener doc:name="Listener" doc:id="7f2a55a1-cdea-4b4c-b465-0a1a03dcc4e9" config-ref="HTTP_Listener_config" path="/error"/>
+		<set-payload value='#[[1,2,3,4,"a",6]]' doc:name="Set Payload" doc:id="5ece034a-9122-46aa-b89f-acea6cc7e4d4" />
+		<foreach doc:name="For Each" doc:id="95535d1a-ed40-47c8-a458-e591e1913370" >
+			<set-payload value="#[payload * 10]" doc:name="Set Payload" doc:id="7723d49c-2352-4b28-a34a-2850d0c4bd5f" />
+			<logger level="INFO" doc:name="Logger" doc:id="834e6ab1-0965-48a7-b8c2-cf5ddd97f0a4" message="#[payload]"/>
+			<set-variable value="#[(vars.op default []) + payload]" doc:name="Set Variable" doc:id="40dfec8b-fb10-4785-a692-711f3631ca27" variableName="op"/>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="6e7d3fef-d8fc-4f65-955b-760fa8567f84" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="for-eachFlow3" doc:id="cf8201d3-09d8-4020-b7e6-52956b9696e3" >
+		<http:listener doc:name="Listener" doc:id="389562ea-8928-4a38-a691-4032c3b9fc52" config-ref="HTTP_Listener_config" path="/try"/>
+		<set-payload value='#[[1,2,3,4,"a","b"]]' doc:name="Set Payload" doc:id="ab397e3d-f383-41e5-92dd-30aaa2e4489f" />
+		<foreach doc:name="For Each" doc:id="fcaa7962-c15e-4401-9682-765fe3dea4ec" >
+			<try doc:name="Try" doc:id="63cdc713-5d68-48c2-b2e8-5d04cd218fce" >
+				<set-payload value="#[payload * 10]" doc:name="Set Payload" doc:id="57a48656-7959-4145-ba7f-ff012fa0d0f8" />
+				<logger level="INFO" doc:name="Logger" doc:id="6d2d8a80-9a0c-4649-a7c2-71c102f5f277" message="#[payload]"/>
+				<set-variable value="#[(vars.success default []) + payload]" doc:name="Set Variable" doc:id="56539cd3-cef9-4b59-93d3-c1e033ca42ac" variableName="success"/>
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="cdf2a251-d954-4d7a-b09f-97070e0c6bfb" >
+						<set-variable value="#[(vars.fail default []) + payload]" doc:name="Set Variable" doc:id="82927243-c0c3-4a1a-b7a1-a466cd178f21" variableName="fail"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="aafaa6b1-a5fe-4339-9b4a-058d43eda92b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"successRecords": vars.success,
+	"failRecords": vars.fail
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="for-eachFlow4" doc:id="a6c236fa-c32d-4249-a342-cca4c01850d8" >
+		<http:listener doc:name="Listener" doc:id="4eb0a25c-2193-47f0-ba80-0270e393fedd" config-ref="HTTP_Listener_config" path="/vars"/>
+		<set-payload value='#["lakshman"]' doc:name="Set Payload" doc:id="63f9358b-0206-4891-b3d4-9aae8f12ae6e" />
+		<set-variable value="#[[1,2,3,4,5,6]]" doc:name="Set Variable" doc:id="e513b181-f28e-4e77-ba9e-515fd3924fe2" variableName="a"/>
+		<foreach doc:name="For Each" doc:id="c2cea0e0-75a2-4be6-8724-9b994cf2eeb6" collection="#[vars.a]">
+			<set-payload value="#[payload * 10]" doc:name="Set Payload" doc:id="ca72150b-f579-42a7-90b3-ac9c9dc86185" />
+			<logger level="INFO" doc:name="Logger" doc:id="7bca4db6-632f-4fd7-afd0-acc667bd808b" message="#[vars.lakshman]"/>
+			<set-variable value="#[(vars.success default []) + payload]" doc:name="Set Variable" doc:id="0209e0b7-e008-428c-9a46-3bc1f50e54b1" variableName="success"/>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="ea658015-466c-4645-b965-56e8e5eaff7f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	store: vars.success,
+	"actual": payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="for-eachFlow5" doc:id="6ea2379a-a8a0-45e3-a091-ee24fd4a90fa" >
+		<http:listener doc:name="Listener" doc:id="576e1bb3-6fc7-4f91-be90-47ff3f6d2bc0" config-ref="HTTP_Listener_config" path="/batch"/>
+		<set-payload value="#[[1,2,3,4,5,6]]" doc:name="Set Payload" doc:id="287bf2bf-be29-4dbb-b09e-b6ae641f3b75" />
+		<foreach doc:name="For Each" doc:id="d8db0c4b-02a1-4d6a-b57b-8a5e72ad1214" batchSize="2">
+			<set-payload value="#[payload]" doc:name="Set Payload" doc:id="b3ae3734-c823-4964-82e6-f1562c896b08" />
+			<logger level="INFO" doc:name="Logger" doc:id="7965579a-8a2e-4b94-a5c2-55eb1a1e49c1" message="#[payload]"/>
+			<set-variable value="#[(vars.success default []) + payload]" doc:name="Set Variable" doc:id="adab9c79-eb2c-4f51-a16c-c8fe34150e3f" variableName="success"/>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="a4cbf7e8-3fca-46a9-a92f-fb280c4b2ccf" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"storing": vars.success,
+	"actual": payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
